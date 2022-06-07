@@ -64,3 +64,9 @@ terraform apply -auto-approve
 
 ![Capture1](https://user-images.githubusercontent.com/22475831/172406495-597b8377-930d-493a-a815-f9728dce980a.PNG)
 
+## Clean your environment:
+
+- run this command:
+```sh
+terraform destroy -auto-approve
+```
