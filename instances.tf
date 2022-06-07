@@ -1,5 +1,3 @@
-
-
 # server-1
 resource "aws_instance" "consul_server_1" {
   ami                    = "ami-0b898040803850657"
@@ -22,6 +20,7 @@ resource "aws_instance" "consul_server_1" {
     inline = [
       "sudo amazon-linux-extras install docker -y && sudo systemctl start docker && sudo systemctl enable docker",
       "sudo docker run -d --net=host --hostname 'consul-server-1' --name 'consul-server-1' --env 'SERVICE_IGNORE=true' --env 'CONSUL_CLIENT_INTERFACE=eth0' --env 'CONSUL_BIND_INTERFACE=eth0' --volume /home/ubuntu/consul/data:/consul/data --volume /home/ubuntu/consul/config:/consul/config --publish 8500:8500 consul:latest consul agent -server -ui -client=0.0.0.0 -bootstrap-expect=3 -advertise=${self.private_ip} -data-dir='/consul/data'",
+      "sudo docker run -d --name=registrator --net=host --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://${self.private_ip}:8500",
       "sleep 5",
       "sudo docker logs consul-server-1",
       "sudo docker exec -i consul-server-1 consul members",
@@ -58,6 +57,7 @@ resource "aws_instance" "consul_server_2" {
     inline = [
       "sudo amazon-linux-extras install docker -y && sudo systemctl start docker && sudo systemctl enable docker",
       "sudo docker run -d --net=host --hostname 'consul-server-2' --name 'consul-server-2' --env 'SERVICE_IGNORE=true' --env 'CONSUL_CLIENT_INTERFACE=eth0' --env 'CONSUL_BIND_INTERFACE=eth0' --volume /home/ubuntu/consul/data:/consul/data --volume /home/ubuntu/consul/config:/consul/config --publish 8500:8500 consul:latest consul agent -server -ui -client=0.0.0.0 -advertise=${self.private_ip} -retry-join=${aws_instance.consul_server_1[count.index].private_ip} -data-dir='/consul/data'",
+      "sudo docker run -d --name=registrator --net=host --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://${self.private_ip}:8500",
       "sleep 5",
       "sudo docker logs consul-server-2",
       "sudo docker exec -i consul-server-2 consul members",
@@ -94,6 +94,7 @@ resource "aws_instance" "consul_server_3" {
     inline = [
       "sudo amazon-linux-extras install docker -y && sudo systemctl start docker && sudo systemctl enable docker",
       "sudo docker run -d --net=host --hostname 'consul-server-3' --name 'consul-server-3' --env 'SERVICE_IGNORE=true' --env 'CONSUL_CLIENT_INTERFACE=eth0' --env 'CONSUL_BIND_INTERFACE=eth0' --volume /home/ubuntu/consul/data:/consul/data --volume /home/ubuntu/consul/config:/consul/config --publish 8500:8500 consul:latest consul agent -server -ui -client=0.0.0.0 -advertise=${self.private_ip} -retry-join=${aws_instance.consul_server_1[count.index].private_ip} -data-dir='/consul/data'",
+      "sudo docker run -d --name=registrator --net=host --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://${self.private_ip}:8500",
       "sleep 5",
       "sudo docker logs consul-server-3",
       "sudo docker exec -i consul-server-3 consul members"
