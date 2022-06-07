@@ -41,7 +41,7 @@ terraform init
 terraform apply -auto-approve
 ```
 
-- run a sample microservice _which registrator will register for us_
+- run a sample microservice _<p>which registrator will register for us</p>_
 
 ![image](https://user-images.githubusercontent.com/22475831/172407567-e14df33c-e673-4a95-b964-a3525664afa0.png)
 
